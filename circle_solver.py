@@ -29,11 +29,10 @@ class CircleSolver:
         self.cg.circles[1].x = 0
         self.cg.circles[1].y = self.cg.circles[0].r + self.cg.circles[1].r
 
-    def place_circle(self, i):
+    def place_circle(self, i): # ISSUE IN THIS WHERE IT WON'T PICK CORRECT NEXT TANGENT CAUSING INFINITE LOOP
         tangent_r = self.tangent_to.r
         curr = self.cg.circles[i]
         prev = self.cg.circles[i-1]
-
         from_tangent = Circle(tangent_r + curr.r, self.tangent_to.x, self.tangent_to.y)
         from_prev = Circle(prev.r + curr.r, prev.x, prev.y)
 
@@ -45,5 +44,17 @@ class CircleSolver:
                 return None
 
         flattened_overlaps = [item for items in overlaps for item in items]
-        self.tangent_to = max(flattened_overlaps, key=lambda c: c.r)
-        self.place_circle(i)
+        try:
+            self.tangent_to = max(flattened_overlaps, key=lambda c: c.r) # pick furthest circle
+            self.place_circle(i)
+        except RecursionError as e: # clause to try all possible overlaps and picking valid config
+            flattened_overlaps.remove(self.tangent_to)
+            while len(flattened_overlaps) > 0:
+                try:
+                    self.tangent_to = flattened_overlaps[0]
+                    self.place_circle(i)
+                    return
+                except:
+                    flattened_overlaps.remove(self.tangent_to)
+
+            raise Exception("RAN OUT OF POSSIBILITIES") # no overlaps work as a tangent

@@ -50,7 +50,7 @@ class CircleGraph():
        return from_circle_set(self.circles)
 
     def get_percentage_filled(self):
-        total_a = sum(pi*c.r**2 for c in self.circles if c.is_placed())
-        bound_area = pi*self.get_bounding_circle().r ** 2
+        total_a = sum(pi*(c.r**2) for c in self.circles if c.is_placed())
+        bound_area = pi*(self.get_bounding_circle().r ** 2)
         return total_a / bound_area
 

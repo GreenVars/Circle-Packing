@@ -36,16 +36,35 @@ circles2 = [
 ]
 
 
-def random_circles(n):
-    from random import randint
-    return [Circle(randint(5, 100), 0, 0) for i in range(n)]
+def random_circles(n, min_r=1, max_r=100):
+    from random import randint, uniform
+    return [Circle(randint(min_r, max_r), 0, 0) for _ in range(n)]
 
 
 all_the_same = [Circle(21, 0, 0) for r in range(19)]  # breaks when r = 20
-descending_5 = [Circle(5 + 5 * r, 0, 0) for r in range(25)]
+descending_5 = [Circle(5 + 5 * r, 0, 0) for r in range(35)]
 # g = CircleGraph(circles, double_r)
-cs = CircleSolver(random_circles(40))
-cs.solve()
-cs.cg.create_adj()
-cs.cg.draw(neighbor_lines=True, intersect_points=True, bounding_circle=True)
-print(cs.cg.get_percentage_filled())
+# cs = CircleSolver(random_circles(35))
+def get_density(circles):
+    cs = CircleSolver(circles)
+    cs.solve()
+    cs.cg.create_adj()
+    cs.cg.draw(neighbor_lines=True, intersect_points=True, bounding_circle=True)
+    return cs.cg.get_percentage_filled()
+
+def sample(n, circ_count, min_r, max_r):
+    densities = []
+    while len(densities) < n:
+        try:
+            densities.append(get_density(random_circles(circ_count, min_r, max_r)))
+        except: # algorithm has bug where will fail but we can still gather results where it works correctly
+            pass
+
+    return sum(densities)/len(densities)
+
+def make_table():
+    for x in range(20, 100, 20):
+        for r in range(20, 100, 20):
+            print("max_r=", r, "circle_count =", str(x),"avg_density", sample(30, x, 1, r))
+
+print(get_density(random_circles(120, 10, 25)))

@@ -42,6 +42,8 @@ class Circle():
 
     def overlaps(self, c2):
         d = self.distance_circ(c2)
+        if d <= 1e-4 and self.r == c2.r: # On top of each other
+            return True
         if d <= abs(self.r - c2.r):
             return True # One circle inside other
         intersect_pts = self.intersect(c2)
