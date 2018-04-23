@@ -9,6 +9,10 @@ class Circle():
         self.y = y
         self.anchored = False
 
+    def is_placed(self): # HACK since circle graph is used to store circles
+                         # but they need to be placed without position
+        return not(self.x is None or self.y is None)
+
     def distance(self, x, y):
         """Distance from center of circle to another point"""
         return math.sqrt((self.x - x) ** 2 + (self.y - y) ** 2)

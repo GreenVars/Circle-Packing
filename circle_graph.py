@@ -1,7 +1,11 @@
+from math import pi
 from circle import Circle
 from circle_drawer import CircleDrawer
+from circle_bounder import from_circle_set
 
 def double_r(c1, c2):
+    if not c1.is_placed() or not c2.is_placed():
+        return False
     return c1.distance_circ(c2) - c1.r - c2.r <= 1e-5
 
 
@@ -25,21 +29,30 @@ class CircleGraph():
 
         self.adj_m = adj
 
-    def draw(self, neighbor_lines=False, intersect_points=False, draw_golden_spiral=True):
+    def draw(self, neighbor_lines=False, intersect_points=False, bounding_circle=True):
         return CircleDrawer(self).draw(neighbor_lines=neighbor_lines,
                                        intersect_pts=intersect_points,
-                                       spiral=draw_golden_spiral)
+                                       bounding_circle=bounding_circle
+                                       )
 
-    def overlaps(self, i):
-        circ = self.circles[i]
+    def overlaps(self, circ):
+        overlaps = []
+        if not circ.is_placed():
+            return overlaps
         for c in self.circles:
-            if c is circ:
+            if not c.is_placed() or c is circ:
                 continue
             if c.overlaps(circ):
-                print(c, circ)
-                print(4972974)
-                return True
-        return False
+                overlaps.append(c)
+        return overlaps
+
+    def get_bounding_circle(self):
+       return from_circle_set(self.circles)
+
+    def get_percentage_filled(self):
+        total_a = sum(pi*c.r**2 for c in self.circles)
+        bound_area = pi*self.get_bounding_circle().r ** 2
+        return total_a / bound_area
 
 if __name__ == "__main__":
     from circle_solver import CircleSolver
@@ -76,11 +89,16 @@ if __name__ == "__main__":
         Circle(13, 60, 50),
         Circle(12, 60, 50),
         Circle(11, 60, 50),
-
     ]
+    def random_circles(n):
+        from random import randint
+        return [Circle(randint(5, 20), 0, 0) for i in range(n)]
 
+    all_the_same = [Circle(21, 0, 0) for r in range(19)] # breaks when r = 20
+    descending_5 = [Circle(5 + 5*r, 0 , 0 ) for r in range(25)]
     # g = CircleGraph(circles, double_r)
-    cs = CircleSolver([Circle(5 + 5*r, 0 , 0 ) for r in range(15)])
-    cs.solve(None)
+    cs = CircleSolver(random_circles(30))
+    cs.solve()
     cs.cg.create_adj()
-    cs.cg.draw(neighbor_lines=True, intersect_points=True, draw_golden_spiral=True)
+    cs.cg.draw(neighbor_lines=True, intersect_points=True, bounding_circle=True)
+    print(cs.cg.get_percentage_filled())

@@ -1,8 +1,4 @@
 from PIL import Image, ImageDraw
-from math import pi
-
-from circle import Circle
-import spiral
 
 
 class CircleDrawer:
@@ -31,16 +27,17 @@ class CircleDrawer:
     def pf(self, coord):
         return self.point_offset(coord)
 
-    def draw(self, neighbor_lines=True, intersect_pts=True, spiral=True, bounding_circle=True):
+    def draw(self, neighbor_lines=True, intersect_pts=True, bounding_circle=True):
         if neighbor_lines:
             self.cg.create_adj()
 
         if bounding_circle:
             # add later
-            pass
+            bound = self.cg.get_bounding_circle()
+            self.drawer.ellipse([self.pf((bound.x - bound.r, bound.y - bound.r)),
+                                 self.pf((bound.x + bound.r, bound.y + bound.r))
+                                    ], outline=(0,255,0))
 
-        if spiral:
-            self.draw_spiral()  # circles should be sorted so first element has largest r
 
         for index, circ in enumerate(self.cg.circles):
 
@@ -67,18 +64,6 @@ class CircleDrawer:
         self.save()
 
         return self.image
-
-    def draw_spiral(self):
-        a = spiral.calculate_a(self.cg.circles[0].r)
-        theta_max = 2 * spiral.calculate_spiral_lower_bound(map(lambda c: c.r, self.cg.circles), a)
-        theta_step = pi/180
-        theta = -4 * pi
-
-        while theta < theta_max:
-            r = spiral.spiral(theta, a)
-            self.drawer.point(self.pf(spiral.polar_to_cart(r, theta)),
-                              fill=(0,255,0))
-            theta += theta_step
 
     def save(self, name=None):
         self.image.save("ex.png" if name is None else name)
