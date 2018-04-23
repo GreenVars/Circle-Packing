@@ -16,8 +16,7 @@ class CircleSolver:
             try:
                 self.place_circle(i)
             except Exception as e:
-                print(e, e.args)
-                return
+                raise Exception("ALGORITHM FAILED, COULD NOT FIND PLACE TO PUT NEXT CIRCLE")
 
     def clear_circle_coords(self):
         for c in self.cg.circles:

@@ -50,7 +50,7 @@ class CircleGraph():
        return from_circle_set(self.circles)
 
     def get_percentage_filled(self):
-        total_a = sum(pi*c.r**2 for c in self.circles)
+        total_a = sum(pi*c.r**2 for c in self.circles if c.is_placed())
         bound_area = pi*self.get_bounding_circle().r ** 2
         return total_a / bound_area
 
@@ -92,13 +92,13 @@ if __name__ == "__main__":
     ]
     def random_circles(n):
         from random import randint
-        return [Circle(randint(5, 20), 0, 0) for i in range(n)]
+        return [Circle(randint(5, 100), 0, 0) for i in range(n)]
 
     all_the_same = [Circle(21, 0, 0) for r in range(19)] # breaks when r = 20
     descending_5 = [Circle(5 + 5*r, 0 , 0 ) for r in range(25)]
     # g = CircleGraph(circles, double_r)
-    cs = CircleSolver(random_circles(30))
+    cs = CircleSolver(random_circles(70))
     cs.solve()
     cs.cg.create_adj()
-    cs.cg.draw(neighbor_lines=True, intersect_points=True, bounding_circle=True)
+    #cs.cg.draw(neighbor_lines=True, intersect_points=True, bounding_circle=True)
     print(cs.cg.get_percentage_filled())
