@@ -29,10 +29,11 @@ class CircleGraph():
 
         self.adj_m = adj
 
-    def draw(self, neighbor_lines=False, intersect_points=False, bounding_circle=True):
+    def draw(self, neighbor_lines=False, intersect_points=False, bounding_circle=True, file_name=None):
         return CircleDrawer(self).draw(neighbor_lines=neighbor_lines,
                                        intersect_pts=intersect_points,
-                                       bounding_circle=bounding_circle
+                                       bounding_circle=bounding_circle,
+                                       file_name=file_name
                                        )
 
     def overlaps(self, circ):

@@ -3,6 +3,9 @@ from math import pi
 from circle_graph import CircleGraph
 from circle import Circle
 
+import sys
+
+STANDARD_LIMIT = sys.getrecursionlimit()
 
 class CircleSolver:
     def __init__(self, circles):
@@ -44,15 +47,20 @@ class CircleSolver:
                 return None
 
         flattened_overlaps = [item for items in overlaps for item in items]
+        #flattened_overlaps.remove(self.tangent_to)
+        #flattened_overlaps.remove(prev)
         try:
             self.tangent_to = max(flattened_overlaps, key=lambda c: c.r) # pick furthest circle
             self.place_circle(i)
         except RecursionError as e: # clause to try all possible overlaps and picking valid config
+            sys.setrecursionlimit(100)  # work around for tangent brute force, bad practice but will speed up runs
+            # TODO REWRITE THIS TO CLEVERLY FIND PROPER NEXT TANGENT, NO BRUTE FORCE
             flattened_overlaps.remove(self.tangent_to)
             while len(flattened_overlaps) > 0:
                 try:
                     self.tangent_to = flattened_overlaps[0]
                     self.place_circle(i)
+                    sys.setrecursionlimit(STANDARD_LIMIT)
                     return
                 except:
                     flattened_overlaps.remove(self.tangent_to)
